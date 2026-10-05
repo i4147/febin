@@ -52,9 +52,9 @@ def atomic_write(data: bytes, final_path: Path) -> bool:
         temp_path.rename(final_path)
         return True
     except OSError as e:
-        print(f"Error during atomic write: {e}")  # Log or handle appropriately
+        print(f"Error during atomic write: {e}")
         if temp_path and temp_path.exists():
-            with _suppress(OSError):  # Suppress errors during cleanup
+            with _suppress(OSError):
                 temp_path.unlink()
         return False
     except Exception as e:
@@ -74,7 +74,7 @@ def safe_delete(file_path: Path, max_retries: int = 3, delay: float = 0.5) -> bo
             return True
         except PermissionError:
             if attempt < max_retries - 1:
-                _sleep(delay * (attempt + 1))  # Exponential backoff can be better, but linear is fine
+                _sleep(delay * (attempt + 1))
                 continue
             print(f"PermissionError: Could not delete {file_path} after {max_retries} retries.")
             return False
@@ -94,10 +94,6 @@ def mpf3(
     num_processes: int = 8,
     context_method: str = "spawn",
 ) -> list[Any]:
-    """Map ``func`` over ``items`` in a process pool, bounding in-flight tasks.
-
-    Returns the list of results in submission order.
-    """
     results: list[Any] = []
     with get_context(context_method).Pool(num_processes) as p:
         pending: deque[Any] = deque()
@@ -136,7 +132,7 @@ def unique_path(path: Path | str) -> Path:
     if suffixes:
         first_suffix_index = path.name.find(suffixes[0])
         stem = path.name[:first_suffix_index]
-        full_suffix = "".join(suffixes)  # Reconstruct .tar.gz or .min.js
+        full_suffix = "".join(suffixes)
     else:
         stem = path.name
         full_suffix = ""
@@ -212,7 +208,6 @@ def gsz(path: str | Path) -> int:
 
 
 def is_python_file(path: str | Path) -> bool:
-    """Return True if ``path`` is a Python file (by suffix or shebang)."""
     path = Path(path)
     if path.suffix == ".py":
         return True
@@ -227,7 +222,6 @@ def is_python_file(path: str | Path) -> bool:
 
 
 def get_pyfiles(path: str | Path) -> list[Path]:
-    """Collect ``.py`` files plus extension-less Python scripts under ``path``."""
     path = Path(path)
     pyfiles: list[Path] = []
     if path.is_file() and (path.suffix == ".py"):

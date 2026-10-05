@@ -65,7 +65,7 @@ def custom_persian_to_finglish(text):
 
 def convert_filenames_with_pathlib(directory="."):
     start_path = Path(directory)
-    for filepath in start_path.rglob("*"):  # rglob finds files recursively
+    for filepath in start_path.rglob("*"):
         if filepath.is_file():
             original_filename_stem = filepath.stem
             original_extension = filepath.suffix

@@ -104,7 +104,6 @@ def remove_comments_and_docstrings(path: Path) -> None:
 
 
 def get_files(cwd: Path, extensions: list[str] | None = None) -> list[Path]:
-    """Return the Python files to process for ``cwd``."""
     if extensions is None:
         extensions = [".py"]
     if cwd.is_file() and cwd.suffix == ".py":

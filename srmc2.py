@@ -8,7 +8,6 @@ from dh import DOC_TH1, DOC_TH2, fsz, get_pyfiles, gsz, mpf3
 
 
 def preprocess(orig: str) -> str:
-    """Remove comment-only lines, falling back to the original on syntax errors."""
     cleaned = []
     lines = orig.splitlines(keepends=True)
     for line in lines[1:]:

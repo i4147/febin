@@ -26,7 +26,6 @@ class LineProcessor:
         return file_path.stat().st_size
 
     def fsz(self, size_bytes: float) -> str:
-        """Format a byte count as a human readable string."""
         for unit in ["B", "KB", "MB", "GB", "TB"]:
             if size_bytes < 1024.0:
                 return f"{size_bytes:.2f} {unit}"

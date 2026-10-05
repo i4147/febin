@@ -9,11 +9,6 @@ from pathlib import Path
 
 
 def process_file(fp: str) -> None:
-    """Append each ``name = "..."`` entry found in ``fp`` to requirements.txt.
-
-    Args:
-        fp: Path to the lock file to read.
-    """
     path: Path = Path(fp)
     content: str = path.read_text(encoding="utf-8")
     lines: list[str] = content.splitlines()
@@ -26,7 +21,6 @@ def process_file(fp: str) -> None:
 
 
 def main() -> None:
-    """Process the default ``uv.lock`` file in the current directory."""
     filename: str = "uv.lock"
     process_file(filename)
 

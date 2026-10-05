@@ -8,7 +8,7 @@ import regex as re
 NEW_INFO = {
     "name": "Isaac Onagh",
     "email": "mkalafsaz@gmail.com",
-    "github_username": "unforgivenii147",
+    "github_username": "i4147",
 }
 
 

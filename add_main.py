@@ -26,7 +26,6 @@ def gsz(path: Path) -> int:
 
 
 def fsz(size: float) -> str:
-    """Format a byte count as a human readable string."""
     power = 2**10
     n = 0
     power_labels = {0: "", 1: "K", 2: "M", 3: "G", 4: "T"}

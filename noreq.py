@@ -76,7 +76,6 @@ def process_tar(path: str) -> None:
 
 
 def dispatch_archive(path: str | Path) -> None:
-    """Route an archive to the matching cleanup routine."""
     path = str(path)
     name = path.lower()
     if name.endswith(".whl"):

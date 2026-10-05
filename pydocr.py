@@ -54,7 +54,6 @@ def extract_ast_docs(src: str) -> tuple[str, list, list]:
 
 
 def extract_from_file(py_path: str) -> tuple[str, list[Any], list[Any]] | None:
-    """Return (module docstring, functions, classes) or None when empty."""
     try:
         src = Path(py_path).read_text(encoding="utf-8")
     except Exception:

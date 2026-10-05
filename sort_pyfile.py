@@ -33,7 +33,9 @@ def sort_python_script(file_path: Path):
             functions.append(node)
         else:
             other_nodes.append(node)
-    constants.sort(key=lambda node: node.targets[0].id if node.targets and isinstance(node.targets[0], ast.Name) else "")
+    constants.sort(
+        key=lambda node: node.targets[0].id if node.targets and isinstance(node.targets[0], ast.Name) else ""
+    )
     classes.sort(key=lambda node: node.name)
     functions.sort(key=lambda node: node.name)
     imports: list[ast.stmt] = []

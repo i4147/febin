@@ -14,21 +14,11 @@ from pathlib import Path
 
 
 def remove_items_fast(items: Iterable[Path]) -> None:
-    """Delete files and directories concurrently.
-
-    Args:
-        items: Paths to remove; directories are removed recursively.
-    """
     with ThreadPoolExecutor(max_workers=32) as ex:
         ex.map(lambda p: shutil.rmtree(p) if p.is_dir() else p.unlink(), items)
 
 
 def compress_and_cleanup(root: Path = Path()) -> None:
-    """Tar-gzip ``root`` into its parent and delete the original contents.
-
-    Args:
-        root: Directory to archive; defaults to the current directory.
-    """
     root = root.resolve()
     archive_name: str = f"{root.name}.tar.gz"
     archive_path: Path = root.parent / archive_name

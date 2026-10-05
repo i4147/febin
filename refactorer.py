@@ -25,7 +25,6 @@ def is_constant(node):
 
 
 def write_to_file(file_path: Path, content: str) -> None:
-    """Append ``content`` to ``file_path``."""
     with Path(file_path).open("a", encoding="utf-8") as f:
         f.write(content + "\n\n")
 

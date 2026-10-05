@@ -6,7 +6,6 @@ from fastwalk import walk_files
 
 
 def is_python_file(path: str | Path) -> bool:
-    """Return True when ``path`` looks like a Python source file."""
     path = Path(path)
     if path.is_dir():
         return False

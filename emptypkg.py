@@ -7,7 +7,6 @@ from pathlib import Path
 
 
 def is_empty_package(dist_info_path: str | Path) -> bool:
-    """Return True when a ``.dist-info`` RECORD lists no payload files."""
     record_file = os.path.join(dist_info_path, "RECORD")
     if not Path(record_file).is_file():
         return False

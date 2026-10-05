@@ -22,24 +22,11 @@ from dh import get_nobinary
 
 
 def extract_words(text: str) -> list[str]:
-    """Return all lowercase words of at least three ASCII letters in ``text``.
-
-    Args:
-        text: Arbitrary input text.
-
-    Returns:
-        List of matched words (already lowercased).
-    """
     words: list[str] = re.findall(r"[a-z]{3,}", text.lower())
     return words
 
 
 def process_file(path: Path) -> None:
-    """Print the 30 most common qualifying words in ``path``.
-
-    Args:
-        path: Text file to analyse.
-    """
     text: str = path.read_text(encoding="utf-8")
     words: list[str] = extract_words(text)
     filtered: list[str] = list(words)
@@ -48,7 +35,6 @@ def process_file(path: Path) -> None:
 
 
 def main() -> None:
-    """Dispatch :func:`process_file` across a multiprocessing pool."""
     args: list[str] = sys.argv[1:]
     cwd: Path = Path.cwd()
     files: list[Path] = [Path(arg) for arg in args] if args else get_nobinary(cwd)

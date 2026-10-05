@@ -12,7 +12,6 @@ import unicodedata
 
 
 def process_file(fn: Path, backup: bool = False) -> bool:
-    """Rewrite ``fn`` in place (ast round-trip for Python, ASCII folding otherwise)."""
     if is_binary(fn):
         return False
     try:

@@ -43,7 +43,6 @@ def run_command(cmd):
 
 
 def process_file(file_path: Path) -> None:
-    """Run ruff check --fix and ruff format on a single file."""
     print(f"[OK] {file_path.name}")
     check_cmd = [
         "ruff",

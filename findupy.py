@@ -13,7 +13,6 @@ SKIPPED_PATHS: list[Any] = []
 
 
 def hash_file(path: Path, chunk_size: int = 8192) -> str | None:
-    """Return the SHA-256 hex digest of ``path``, or None when unreadable."""
     sha = hashlib.sha256()
     try:
         get_size = path.stat().st_size
@@ -41,7 +40,6 @@ def hash_file(path: Path, chunk_size: int = 8192) -> str | None:
 
 
 def collect_all_files(directory: str | Path) -> list[Path]:
-    """Recursively collect every file below ``directory``."""
     all_files = []
     for root, _dirs, files in os.walk(directory, onerror=lambda e: None):
         for f in files:
@@ -51,7 +49,6 @@ def collect_all_files(directory: str | Path) -> list[Path]:
 
 
 def find_duplicate_files(directory: str | Path) -> dict[str, list[str]]:
-    """Group files under ``directory`` by identical content hash."""
     root = Path(directory)
     if not root.exists():
         msg = f"Directory does not exist: {root}"

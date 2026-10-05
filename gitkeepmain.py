@@ -107,10 +107,6 @@ def reset_to_last_commit() -> bool:
 
 
 def alternative_reset_method() -> bool:
-    """Reset the repository using a sequence of git commands.
-
-    Returns True when every command succeeded.
-    """
     print("Using alternative reset method...")
     commands = [
         "git branch backup-before-cleanup",

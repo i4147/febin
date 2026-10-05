@@ -14,11 +14,6 @@ from termcolor import cprint
 
 
 def process_file(fp: Path) -> None:
-    """Run :func:`dh.fix_code` on ``fp`` and rewrite it if anything changed.
-
-    Args:
-        fp: Path to the Python source file to fix.
-    """
     code: str = fp.read_text(encoding="utf-8")
     result: str = fix_code(code)
     diff_size: int = len(code) - len(result)

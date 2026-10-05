@@ -230,7 +230,6 @@ class FileProcessor:
         self.extractor = CodeBlockExtractor()
 
     def process_file(self, file_path: str | Path) -> int:
-        """Extract code blocks from a single HTML file."""
         try:
             html_path = Path(file_path)
             if html_path.suffix.lower() != ".html":

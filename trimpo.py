@@ -22,31 +22,22 @@ logger.add("/sdcard/allimport.log", diagnose=True)
 
 
 def tryimport(package: str) -> bool | str:
-    """Attempt to import ``package``.
-
-    Args:
-        package: Importable module name.
-
-    Returns:
-        ``True`` on success, otherwise the formatted traceback string.
-    """
     try:
         import_module(package)
         logger.info(f"\u2713 {package}")
         return True
-    except Exception:  # noqa: BLE001 - report any import failure, keep going
+    except Exception:
         logger.debug(f"X {package}")
         return traceback.format_exc()
 
 
 def tryallimport() -> None:
-    """Import every installed distribution, logging success or failure."""
     for pkg in distributions():
         pkn: str = pkg.metadata["name"]
         try:
             import_module(pkn)
             logger.info(f"\u2713 {pkn}")
-        except Exception:  # noqa: BLE001 - one bad package must not stop the rest
+        except Exception:
             logger.debug(f"X {pkn}")
 
 

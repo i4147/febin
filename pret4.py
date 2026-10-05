@@ -5,7 +5,7 @@ import subprocess
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
-from dh import unique_path  # Ensure this is available in your environment
+from dh import unique_path
 
 EXTENSIONS = {".js", ".css", ".html", ".json", ".mjs", ".cjs", ".ts", ".jsx", ".tsx"}
 EXCLUDE_PATTERNS = {".py", ".ipynb"}
@@ -25,7 +25,7 @@ def format_file(file_path: Path) -> tuple[Path, bool, str | None]:
             ["prettier", "--write", str(file_path)],
             capture_output=True,
             text=True,
-            timeout=300,  # Reduced timeout for individual files
+            timeout=300,
         )
         if result.returncode == 0:
             return file_path, True, None

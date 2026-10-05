@@ -30,7 +30,6 @@ def install_js2py():
 
 
 def convert_with_js2py(js_file: Path, outfile: Path) -> tuple[bool, str]:
-    """Translate ``js_file`` to Python using js2py, writing to ``outfile``."""
     try:
         import js2py
 

@@ -45,7 +45,6 @@ def collect_nodes_to_remove(source_bytes: bytes, node: Node) -> list[Node]:
 
 
 def process_file(filepath: str) -> tuple[str, bool]:
-    """Strip non-preserved comments from ``filepath``."""
     global _parser
     if _parser is None:
         init_worker()

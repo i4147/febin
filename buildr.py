@@ -14,7 +14,6 @@ from dh import run_command
 if __name__ == "__main__":
     cwd: Path = Path.cwd()
 
-    # Legacy setuptools projects.
     for path in cwd.rglob("setup.py"):
         pardir: Path = path.parent
         os.system(f"cd {pardir!s}")
@@ -24,7 +23,6 @@ if __name__ == "__main__":
         if ret != 0:
             print("ok")
 
-    # PEP 517 projects, skipping any that already produced a wheel.
     for path in cwd.rglob("pyproject.toml"):
         pardir = path.parent
         distdir: Path = pardir / "dist"

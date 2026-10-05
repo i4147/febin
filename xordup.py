@@ -35,7 +35,6 @@ class QuickXorHash:
 
 
 def calculate_xorhash(path: Path) -> tuple[str | None, Path]:
-    """Return (QuickXorHash hex digest, path); the digest is None on failure."""
     q = QuickXorHash()
     try:
         with path.open("rb") as f:

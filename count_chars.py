@@ -13,7 +13,6 @@ import sys
 from pathlib import Path
 
 if __name__ == "__main__":
-    # Exactly one positional argument (the file to inspect) is required.
     if len(sys.argv) != 2:
         print("Usage: python count_chars_of_input_file.py <input_file>")
         sys.exit(1)

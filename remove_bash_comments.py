@@ -91,7 +91,7 @@ class BashCommentRemover:
             if not comments_to_remove:
                 return content, False
 
-            lines = content.splitlines(True)  # Keep line endings
+            lines = content.splitlines(True)
             modified_lines = lines.copy()
 
             comments_to_remove.sort(

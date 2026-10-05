@@ -7,7 +7,6 @@ from pathlib import Path
 
 
 def compress_folder(folder_path: Path, output_path: Path) -> bool:
-    """Create a tar archive of ``folder_path`` at ``output_path``."""
     try:
         shutil.make_archive(str(output_path), "tar", str(folder_path))
     except Exception:

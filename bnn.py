@@ -14,7 +14,6 @@ from pathlib import Path
 
 
 def main() -> None:
-    """Replace literal ``\\n`` escapes with newlines in the file from argv."""
     if len(sys.argv) != 2:
         print(f"Usage: {sys.argv[0]} <filename>")
         sys.exit(1)

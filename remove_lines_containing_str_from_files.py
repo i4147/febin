@@ -21,7 +21,6 @@ def clean_text(text: str) -> str:
 
 
 def clean_file(path: str | Path) -> None:
-    """Strip unwanted lines from ``path`` in place."""
     try:
         original = Path(path).read_text(encoding="utf-8", errors="ignore")
     except Exception:

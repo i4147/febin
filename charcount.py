@@ -12,17 +12,15 @@ or is detected as binary, so the script is safe to point at arbitrary paths.
 import sys
 from pathlib import Path
 
-from dh import is_binary  # project helper: True when a path looks binary
+from dh import is_binary
 
 if __name__ == "__main__":
-    # Exactly one positional argument (the file to inspect) is required.
     if len(sys.argv) != 2:
         print("Usage: python count_chars_of_input_file.py <input_file>")
         sys.exit(1)
 
     path: Path = Path(sys.argv[1])
 
-    # Symlinks and binary files carry no meaningful character count.
     if path.is_symlink() or is_binary(path):
         sys.exit(0)
 

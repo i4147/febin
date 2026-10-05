@@ -58,7 +58,7 @@ def main():
     target_size_per_dir = max(1_000_000, total_size // 10)
     n_dirs_by_count = (num_files + target_files_per_dir - 1) // target_files_per_dir
     n_dirs_by_size = (total_size + target_size_per_dir - 1) // target_size_per_dir
-    n_dirs = max(2, min(100, max(n_dirs_by_count, n_dirs_by_size)))  # clamp 2–100
+    n_dirs = max(2, min(100, max(n_dirs_by_count, n_dirs_by_size)))
 
     logger.info(f"Targeting ~{n_dirs} directories")
 
@@ -85,7 +85,7 @@ def main():
         dir_path = root / dir_name
         dir_path.mkdir(exist_ok=True)
         created_dirs.append((dir_name, len(d["files"]), d["size"]))
-        existing_dir_names.add(dir_name)  # mark as used
+        existing_dir_names.add(dir_name)
 
         logger.info(f"Created dir '{dir_name}' → {len(d['files'])} files, {d['size']:,} bytes")
         for f in d["files"]:

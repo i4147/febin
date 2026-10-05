@@ -19,7 +19,7 @@ def gsz(path):
 
 
 def extract_zst_file(archive_path, extract_path):
-    output_path = extract_path / archive_path.stem  # Remove .zst extension
+    output_path = extract_path / archive_path.stem
     with Path(archive_path).open("rb") as compressed_file:
         dctx = zstd.ZstdDecompressor()
         with Path(output_path).open("wb") as output_file:

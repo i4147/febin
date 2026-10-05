@@ -18,10 +18,10 @@ def convert_pdf_to_jpg(pdf_path: Path, output_folder: Path):
 
         images = convert_from_path(
             pdf_path=pdf_path,
-            dpi=300,  # You can adjust DPI for quality (higher DPI = better quality, larger files)
+            dpi=300,
             output_folder=pdf_output_dir,
             fmt="jpeg",
-            thread_count=4,  # Use multiple threads for faster conversion
+            thread_count=4,
             poppler_path=POPPLER_PATH,
         )
 

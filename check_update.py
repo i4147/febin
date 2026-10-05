@@ -19,7 +19,7 @@ def check_package_on_pypi(package_name: str, current_version: str) -> str | None
             return data["info"]["version"]
 
         if response.status_code == 404:
-            return None  # Package not found on PyPI
+            return None
         return None
     except requests.exceptions.RequestException as e:
         print(f"  ⚠️  Error checking {package_name}: {e}")
@@ -36,7 +36,7 @@ def compare_versions(current: str, latest: str) -> str:
         if current_v < latest_v:
             return "update"
         if current_v > latest_v:
-            return "newer"  # Current is newer than latest (unusual)
+            return "newer"
         return "current"
     except InvalidVersion:
         if current == latest:

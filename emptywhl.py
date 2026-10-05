@@ -7,7 +7,6 @@ from pathlib import Path
 
 
 def is_empty_wheel(wheel_path: str | Path) -> bool:
-    """Return True when the wheel only contains ``.dist-info`` entries."""
     with zipfile.ZipFile(wheel_path, "r") as z:
         dist_info_dirs = [name for name in z.namelist() if name.endswith((".dist-info/", ".dist-info"))]
         if not dist_info_dirs:

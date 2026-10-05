@@ -10,7 +10,6 @@ from fastwalk import walk_files
 
 
 def process_file(file: Path) -> bool:
-    """Minify an HTML file in place; return True when it changed."""
     try:
         orig = file.read_text(encoding="utf-8")
         print(len(orig))

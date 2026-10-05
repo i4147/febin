@@ -22,13 +22,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
-# -----------------------------
-# Safe import & pattern mapping
-# -----------------------------
-# Mapping: (module, attr) → (replacement_module, replacement_import, new_call)
-# If replacement_module is None → inline replacement (no import change)
 REPLACEMENTS: Dict[Tuple[str, str], Tuple[Optional[str], Optional[str], str]] = {
-    # os.path
     ("os", "path.join"): (
         "pathlib",
         "Path",
@@ -62,7 +56,7 @@ REPLACEMENTS: Dict[Tuple[str, str], Tuple[Optional[str], Optional[str], str]] = 
         "pathlib",
         "Path",
         "lambda paths: Path(os.path.commonpath(paths))",
-    ),  # keep os for now (hard to replace)
+    ),
     ("os", "path.samefile"): (
         "pathlib",
         "Path",
@@ -70,13 +64,12 @@ REPLACEMENTS: Dict[Tuple[str, str], Tuple[Optional[str], Optional[str], str]] = 
     ),
     ("os", "path.expanduser"): ("pathlib", "Path", "lambda p: Path(p).expanduser()"),
     ("os", "path.expandvars"): ("pathlib", "Path", "lambda p: Path(p).expandvars()"),
-    ("os", "path.normpath"): ("pathlib", "Path", "lambda p: Path(p).resolve()"),  # ≈
+    ("os", "path.normpath"): ("pathlib", "Path", "lambda p: Path(p).resolve()"),
     ("os", "path.normcase"): (
         "pathlib",
         "Path",
         "lambda p: Path(p).resolve().as_posix()",
-    ),  # not exact
-    # os (non-pathlib)
+    ),
     ("os", "makedirs"): ("shutil", "Path", "lambda p, *a, **k: Path(p).mkdir(*a, **k)"),
     ("os", "mkdir"): (
         "pathlib",
@@ -92,15 +85,15 @@ REPLACEMENTS: Dict[Tuple[str, str], Tuple[Optional[str], Optional[str], str]] = 
         "pathlib",
         "Path",
         "lambda top: ((str(p), [d.name for d in p.iterdir() if d.is_dir()], [f.name for f in p.iterdir() if f.is_file()]) for p in Path(top).rglob('*') if p.is_dir())",
-    ),  # simplified
+    ),
     ("os", "stat"): ("pathlib", "Path", "lambda p: Path(p).stat()"),
     ("os", "chdir"): (
         "pathlib",
         "Path",
         "lambda p: os.chdir(p)",
-    ),  # os.chdir still needed
-    ("os", "getcwd"): ("pathlib", None, "lambda: Path.cwd()"),  # Path.cwd() is enough
-    ("os", "environ"): ("os", None, "os.environ"),  # keep os for env
+    ),
+    ("os", "getcwd"): ("pathlib", None, "lambda: Path.cwd()"),
+    ("os", "environ"): ("os", None, "os.environ"),
     ("os", "chmod"): ("pathlib", "Path", "lambda p, mode: Path(p).chmod(mode)"),
     ("os", "chown"): ("pathlib", "Path", "lambda p, uid, gid: Path(p).chown(uid, gid)"),
     ("os", "symlink"): (
@@ -115,15 +108,10 @@ REPLACEMENTS: Dict[Tuple[str, str], Tuple[Optional[str], Optional[str], str]] = 
 }
 
 
-# Special-case: `os.path.join(a, b, c)` → `Path(a) / b / c`
-# We handle this via a post-pass regex (below)
-# -----------------------------
-# AST visitor to detect `os` usage
-# -----------------------------
 class OsUsageFinder(ast.NodeVisitor):
     def __init__(self):
         self.uses_os = False
-        self.os_import_name: Optional[str] = None  # e.g., alias 'import os as o'
+        self.os_import_name: Optional[str] = None
         self.os_path_import_name: Optional[str] = None
         self.os_used_attrs: Set[str] = set()
         self.os_path_used_attrs: Set[str] = set()
@@ -150,11 +138,9 @@ class OsUsageFinder(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Attribute(self, node: ast.Attribute):
-        # os.something
         if isinstance(node.value, ast.Name) and node.value.id == self.os_import_name:
             self.uses_os = True
             self.os_used_attrs.add(node.attr)
-        # os.path.something
         if isinstance(node.value, ast.Attribute):
             if (
                 isinstance(node.value.value, ast.Name)
@@ -167,23 +153,15 @@ class OsUsageFinder(ast.NodeVisitor):
 
 
 def rewrite_os_to_pathlib(source: str, tree: ast.AST) -> str:
-    # Step 1: Replace `os.path.join(...)` with `Path(...) / ...`
-    #   os.path.join(a, b, c) → Path(a) / b / c
     source = re.sub(
         r"\bos\.path\.join\s*\(\s*([^)]*)\s*\)",
         lambda m: _join_replacer(m.group(1)),
         source,
     )
-    # Step 2: Replace function calls like os.getcwd() → Path.cwd()
-    #   os.getcwd() → Path.cwd()
     source = re.sub(r"\bos\.getcwd\s*\(\s*\)", "Path.cwd()", source)
-    # Step 3: Replace os.listdir() → list(Path().iterdir()) or Path().iterdir()
-    #   os.listdir() → list(Path().iterdir())
     source = re.sub(r"\bos\.listdir\s*\(\s*\)", "list(Path().iterdir())", source)
     source = re.sub(r'\bos\.listdir\s*\(\s*"([^"]+)"\s*\)', r'list(Path("\1").iterdir())', source)
     source = re.sub(r"\bos\.listdir\s*\(\s*\'([^\']+)\'\s*\)", r'list(Path("\1").iterdir())', source)
-    # Step 4: Replace os.path.exists, .isdir, etc.
-    #   os.path.exists(p) → Path(p).exists()
     for attr in [
         "exists",
         "isdir",
@@ -205,14 +183,11 @@ def rewrite_os_to_pathlib(source: str, tree: ast.AST) -> str:
     ]:
         pattern = rf"\bos\.path\.{attr}\s*\(\s*([^)]*)\s*\)"
         source = re.sub(pattern, _make_pathlib_call(attr), source)
-    # Step 5: Replace os.makedirs, os.mkdir, etc.
     for os_attr, (mod, imp, repl) in REPLACEMENTS.items():
         if mod is None and imp == "Path" and "lambda" in repl:
-            # Already handled above; skip
             continue
         if os_attr[0] == "os" and os_attr[1] not in ["path"]:
             pattern = rf"\bos\.{os_attr[1]}\s*\(\s*([^)]*)\s*\)"
-            # Simple heuristic: use lambda if not simple
             if os_attr[1] in [
                 "makedirs",
                 "mkdir",
@@ -228,7 +203,6 @@ def rewrite_os_to_pathlib(source: str, tree: ast.AST) -> str:
                 "unlink",
                 "scandir",
             ]:
-                # For now, just rewrite to Path(...).method()
                 if os_attr[1] == "makedirs":
                     source = re.sub(
                         r"\bos\.makedirs\s*\(\s*([^,]+)\s*(?:,\s*([^)]+))?\s*\)",
@@ -303,10 +277,7 @@ def rewrite_os_to_pathlib(source: str, tree: ast.AST) -> str:
                         r"Path(\1).iterdir()",
                         source,
                     )
-    # Step 6: Add `from pathlib import Path` if needed (simple heuristic)
-    #   We'll just try to add it if os.path.* or Path(...) used
     if "Path(" in source and "from pathlib import Path" not in source:
-        # Insert after first import or at top
         lines = source.splitlines(keepends=True)
         insert_idx = 0
         for i, line in enumerate(lines):
@@ -315,26 +286,22 @@ def rewrite_os_to_pathlib(source: str, tree: ast.AST) -> str:
             elif line.strip() and not line.strip().startswith("#"):
                 break
         if insert_idx == 0:
-            insert_idx = 1  # after shebang/comments
+            insert_idx = 1
         lines.insert(insert_idx, "from pathlib import Path\n")
         source = "".join(lines)
     return source
 
 
 def _join_replacer(args: str) -> str:
-    """Convert `os.path.join(a, b, c)` → `Path(a) / b / c`"""
     parts = [p.strip() for p in args.split(",") if p.strip()]
     if not parts:
         return "Path()"
     if len(parts) == 1:
         return f"Path({parts[0]})"
-    # Join with /
     return " / ".join([f"Path({parts[0]})"] + parts[1:])
 
 
 def _make_pathlib_call(attr: str) -> Callable[[Any], str]:
-    """Return replacement lambda for os.path.attr"""
-    # Map common cases to simple Path() calls
     mapping = {
         "exists": lambda p: f"Path({p}).exists()",
         "isdir": lambda p: f"Path({p}).is_dir()",
@@ -348,18 +315,15 @@ def _make_pathlib_call(attr: str) -> Callable[[Any], str]:
         "getmtime": lambda p: f"Path({p}).stat().st_mtime",
         "getsize": lambda p: f"Path({p}).stat().st_size",
         "relpath": lambda p: f"Path({p}).resolve().relative_to(Path('.').resolve())",
-        "samefile": lambda p: f"Path({p}).exists() and Path({p}).samefile(Path({p}))",  # simplified
+        "samefile": lambda p: f"Path({p}).exists() and Path({p}).samefile(Path({p}))",
         "expanduser": lambda p: f"Path({p}).expanduser()",
         "expandvars": lambda p: f"Path({p}).expandvars()",
-        "normpath": lambda p: f"str(Path({p}).resolve())",  # approximate
-        "normcase": lambda p: f"Path({p}).as_posix().lower()",  # approximate
+        "normpath": lambda p: f"str(Path({p}).resolve())",
+        "normcase": lambda p: f"Path({p}).as_posix().lower()",
     }
     return mapping.get(attr, lambda p: f"Path({p}).{attr}()")
 
 
-# -----------------------------
-# Main refactoring logic
-# -----------------------------
 def process_file(path: Path, dry_run: bool = True) -> bool:
     try:
         with path.open("r", encoding="utf-8") as f:
@@ -378,7 +342,7 @@ def process_file(path: Path, dry_run: bool = True) -> bool:
     finder = OsUsageFinder()
     finder.visit(tree)
     if not finder.uses_os:
-        return False  # No `os` usage — skip
+        return False
     new_source = rewrite_os_to_pathlib(original, tree)
     if new_source.strip() == original.strip():
         return False
@@ -393,7 +357,7 @@ def process_file(path: Path, dry_run: bool = True) -> bool:
             )
         )
         print(f"\n✅ {path} — would change (diff preview):")
-        print("".join(diff[:20]))  # Show first 20 lines
+        print("".join(diff[:20]))
         if len(diff) > 20:
             print(f"… ({len(diff) - 20} more lines)")
         return True
@@ -431,7 +395,6 @@ def collect_files(targets: List[str]) -> List[Path]:
             py_files.append(p.resolve())
         elif p.is_dir():
             for root, dirs, files in os.walk(p):
-                # Filter excluded dirs *in-place* to avoid descending
                 dirs[:] = [d for d in dirs if d not in excluded_dirs]
                 for f in files:
                     if f.endswith(".py"):

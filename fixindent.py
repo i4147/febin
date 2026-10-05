@@ -33,12 +33,12 @@ def fix_python_indentation(input_file_path, output_file_path=None, indent_size=4
             fixed_lines.append("\n")
             continue
         if any(stripped_line.startswith(end_word) for end_word in block_enders) and current_indent_level > 0:
-            if i > 0 and not lines[i - 1].strip().endswith(":"):  # اگر خط قبلی پایان بلوک نباشد
+            if i > 0 and not lines[i - 1].strip().endswith(":"):
                 current_indent_level = max(0, current_indent_level - 1)
         fixed_lines.append(" " * (current_indent_level * indent_size) + stripped_line + "\n")
         if stripped_line.endswith(":"):
             first_word = stripped_line.split(" ")[0]
-            if first_word in block_starters or (first_word == "lambda" and ":" in stripped_line):  # برای lambda
+            if first_word in block_starters or (first_word == "lambda" and ":" in stripped_line):
                 current_indent_level += 1
         if stripped_line.startswith(("elif", "else")):
             pass

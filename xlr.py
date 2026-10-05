@@ -15,11 +15,6 @@ from pathlib import Path
 
 
 def process_file(fp: Path) -> None:
-    """Expand the vertical spacing of ``fp`` in place.
-
-    Args:
-        fp: Path to the text file to rewrite.
-    """
     con: str = fp.read_text()
     nl: list[str] = [line + "\n\n\n\n" for line in con.splitlines()]
     newconn: str = "\n".join(nl)

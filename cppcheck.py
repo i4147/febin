@@ -14,7 +14,6 @@ cpp_files = {".cpp", ".cc", ".cxx", ".hpp", ".hpp11", ".hh", ".hxx"}
 
 
 def validate_cpp(path: Path) -> tuple[Path, int, str, str]:
-    """Syntax-check a C/C++ file, returning (path, returncode, stdout, stderr)."""
     cmd = ""
     if path.suffix in c_files:
         cmd = "clang -fsyntax-only str(path)"

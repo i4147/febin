@@ -122,7 +122,6 @@ def mode_to_string(mode: int) -> str:
 
 
 def human_size(n: float) -> str:
-    """Format a byte count using single-letter unit suffixes."""
     for unit in ["B", "K", "M", "G", "T"]:
         if n < 1024:
             return f"{n}{unit}"

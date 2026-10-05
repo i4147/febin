@@ -27,7 +27,7 @@ def extract_upgradable_packages(results_file_path: str) -> list[tuple[str, str]]
                     package_name = match.group("package_name")
                     latest_version = match.group("latest_version")
                     upgradable_packages.append((package_name, latest_version))
-                    continue  # به خط بعدی می‌رویم
+                    continue
 
                 match = package_pattern.match(line)
                 if match:

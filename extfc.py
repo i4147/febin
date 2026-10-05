@@ -79,10 +79,8 @@ folders_found = set()
 total_definitions = 0
 cwd = Path.cwd()
 for py in cwd.rglob("*.py"):
-    # Skip hidden directories and site-packages
     if any(part.startswith(".") for part in py.parts) or "site-packages" in py.parts:
         continue
-    # Skip files in the output directory
     if OUT_DIR in py.parents:
         continue
     try:
@@ -91,11 +89,9 @@ for py in cwd.rglob("*.py"):
         tree = parser.parse(src)
         definitions = extract_functions_and_classes(src, tree)
         if definitions:
-            # Get the folder containing the Python file
             folder_path = py.parent
             relative_folder = get_relative_path(folder_path, Path())
             folders_found.add(str(relative_folder))
-            # Add definitions with file metadata
             file_header = f"\n# {'=' * 60}\n# File: {py.name}\n# {'=' * 60}\n"
             folder_definitions[relative_folder].append(file_header)
             for i, def_text in enumerate(definitions, 1):
@@ -106,19 +102,15 @@ for py in cwd.rglob("*.py"):
             total_definitions += len(definitions)
     except Exception as e:
         print(f"⚠️  Error processing {py}: {e}")
-# Write collected definitions to folder-specific files
 for (
     folder,
     defs_list,
 ) in folder_definitions.items():
     if not defs_list:
         continue
-    # Create output file path: output/foldername/definitions.py
     out_file = OUT_DIR / folder / "definitions.py"
     out_file.parent.mkdir(parents=True, exist_ok=True)
-    # Combine all definitions
     content = "\n".join(defs_list)
-    # Add a comprehensive header
     header = f"""#!/usr/bin/env python
 # Auto-generated definitions file for folder: {folder}
 # Generated from {processed_files_count} Python file(s) containing {total_definitions} definitions
@@ -127,7 +119,6 @@ for (
 # Each definition is separated by a line of dashes for clarity
 """
     out_file.write_text(header + content)
-    # Count definitions in this folder
     folder_def_count = len([d for d in defs_list if d.strip() and not d.startswith("#") and not d.startswith("\n#")])
     print(
         f"✅ saved: {out_file} ({folder_def_count} definitions from {len([f for f in defs_list if 'File:' in f])} files)"

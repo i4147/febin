@@ -67,7 +67,6 @@ def get_file_sample(
 
 
 def analyze_directory(directory: str = ".", show_all: bool = False) -> dict[str, Any]:
-    """Scan ``directory`` and classify text files by detected language."""
     root_dir = Path(directory).resolve()
     print(f"🔍 Scanning directory: {root_dir}")
     print("=" * 70)

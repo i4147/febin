@@ -14,7 +14,6 @@ from loguru import logger
 
 
 def compress_folder(folder_path: str | Path, output_base_name: str, format: str = "tar") -> bool:
-    """Archive ``folder_path`` into ``output_base_name`` using ``format``."""
     try:
         shutil.make_archive(output_base_name, format, str(folder_path))
     except Exception as exc:

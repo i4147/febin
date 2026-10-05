@@ -23,29 +23,17 @@ err_dir.mkdir(exist_ok=True)
 
 
 def process_file(fp: Path) -> None:
-    """Copy ``fp`` into the ERROR directory when it does not parse.
-
-    Args:
-        fp: Path to the candidate Python source file.
-    """
     content: str = fp.read_text(encoding="utf-8")
     try:
         ast.parse(content)
-    except Exception:  # noqa: BLE001 - any parse failure means "quarantine it"
+    except Exception:
         newpath: Path = err_dir / fp.name
         cpf(fp, newpath)
 
 
 def main() -> int:
-    """Parse each target file in parallel via :func:`dh.mpf3a`.
-
-    Returns:
-        Process exit code (always ``0``).
-    """
     args: list[str] = sys.argv[1:]
-    files: list[Path] = (
-        [Path(f) for f in args] if args else [Path(p) for p in cwd.glob("*.py")]
-    )
+    files: list[Path] = [Path(f) for f in args] if args else [Path(p) for p in cwd.glob("*.py")]
     mpf3a(process_file, files)
     return 0
 

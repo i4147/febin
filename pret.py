@@ -37,9 +37,9 @@ def atomic_write(data: bytes, final_path: Path) -> bool:
         temp_path.rename(final_path)
         return True
     except OSError as e:
-        print(f"Error during atomic write: {e}")  # Log or handle appropriately
+        print(f"Error during atomic write: {e}")
         if temp_path and temp_path.exists():
-            with _suppress(OSError):  # Suppress errors during cleanup
+            with _suppress(OSError):
                 temp_path.unlink()
         return False
     except Exception as e:

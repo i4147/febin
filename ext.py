@@ -37,7 +37,6 @@ def discover_python_files() -> list[str]:
 
 
 def mark_parents(node: ast.AST, parent: ast.AST | None = None) -> None:
-    """Attach a ``_parent`` back-reference to every child node."""
     for child in ast.iter_child_nodes(node):
         child._parent = node  # type: ignore[attr-defined]
         mark_parents(child, node)
